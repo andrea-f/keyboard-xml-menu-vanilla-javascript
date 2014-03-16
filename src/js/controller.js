@@ -34,9 +34,19 @@ function controller(params) {
      this.dataCarousel = null;
 
      this.carouselPosition = new position();
-     this.carouselPosition.setIndex(0);
+     this.carouselPosition.setIndex();
 
      this.carouselList = []
+
+     this.uint = new ui();
+
+     this.input = {
+         "ENTER": "ENTER",
+         "UP": "UP",
+         "DOWN": "DOWN",
+         "BACK": "BACK",
+         "HOME": "HOME"
+     }
 }
 
 controller.prototype.init = function init() {
@@ -48,12 +58,13 @@ controller.prototype.init = function init() {
 }
 
 controller.prototype.displayUI = function displayUI() {
-    uint = new ui();
-    uint.displayElements(this.carouselList[-1].getHtml());
+    this.carouselPosition.setIndex(-1);
+    main.log("displayUI: " + this.carouselPosition.getIndex())
+    this.uint.displayElements(this.carouselList[this.carouselPosition.getIndex()].getHtml());
 }
 
 controller.prototype.generateCarousel = function generateCarousel(folderName,elems) {
-    var i = this.carouselPosition.getIndex();
+    var g = this.carouselPosition.getIndex();
     var name = folderName,
         direction = "vertical",
         visibleElements = 6,
@@ -70,25 +81,29 @@ controller.prototype.generateCarousel = function generateCarousel(folderName,ele
                     "template": function(i) {
                         var html = "", f;
                         if (i === 0) {
-                            f = "focus";
-                            html += "<p ><span class='links' >"+this.name+"</span></p>";
+                            this.focus = this.name+"-"+i
+                            f = 'focus'
+                            //html += "<p ><span class='links focus' id='top-"+i+"'>"+this.name+"</span></p>";
                         } else {
-                            f = "";
+                            f = ""
                         }
-                        //sd.log("items template: "+j+" subitems template: "+i)
-                        //.getAttribute('title')
+                        
+                        html += "<p ><span class='"+this.items[i].classType+" "+f+"' id='"+this.name+"-"+i+"' >"+this.items[i].name+"</span></p>";
 
-                        html += "<p ><span class='"+this.items[i].classType+"' >"+this.items[i].name+"</span></p>";
                         return html;
                     }
                 };
     
-    this.carouselList[i] = new carousel(params);
-    main.log("Generating carousel: " + folderName + " with index num: "+i+" \n" + this.carouselList[i].getHtml() + " \n")
+    this.carouselList[g] = new carousel(params);
+    main.log("folder name: "+folderName+ " pos car: "+this.carouselPosition.getIndex())
+    //main.log("Generating carousel: " + folderName + " with index num: "+i+" \n" + this.carouselList[i].getHtml() + " \n")
     
     //this.carouselList[i].setFocus();
     //main.log(this.carouselList[i].getHtml())
+    html = this.carouselList[g].getHtml()
+    
     this.carouselPosition.inc(1)
+    this.carouselPosition.setLength(this.carouselList.length)
 }
 
 /*
@@ -111,6 +126,58 @@ controller.prototype.loadXMLData = function loadXML(location) {
     //alert(d.getAttribute('title'))
     //alert(d.nodeValue)
     
+}
+
+controller.prototype.traverseData = function traverseData(name) {
+    for (var g = 0; g < this.carouselList.length; g++) {
+        if (name === this.carouselList[g].name)
+            this.carouselPosition.setIndex(g)
+            //break;
+    }
+    return this.carouselList[this.carouselPosition.getIndex()].getHtml()
+}
+
+controller.prototype.handleInput = function handleInput(inputType) {
+    var index = this.carouselPosition.getIndex()
+    main.log("pos car: "+this.carouselPosition.getIndex())
+    main.log(index)
+    switch (inputType) {
+        case this.input.ENTER:
+            var elemIndex = this.carouselList[index].items[this.carouselList[index].position.getIndex()];
+            //alert()
+            //this.carouselPosition.setIndex(go)
+            if (elemIndex.classType == 'links') {
+                html = this.traverseData(elemIndex.name)
+                this.uint.displayElements(this.carouselList[this.carouselPosition.getIndex()].getHtml());
+            } else {
+                alert(elemIndex.name)
+            }
+            
+            break;
+        case this.input.UP:
+            this.carouselList[index].keyBefore();
+            break;
+        case this.input.DOWN:
+            main.log("itemsize: "+this.carouselList[0].getItemSize())//this.carouselPosition.getIndex()
+            //this.carouselList[0].setFocus()
+            this.carouselList[index].keyAfter();
+            break;
+        case this.input.HOME:
+            this.uint.displayElements(this.carouselList[0].getHtml());
+            break;
+        case this.input.BACK:
+            var oldindex = this.carouselPosition.getOldIndex()
+            html = this.traverseData(parent)
+            //this.carouselPosition.setIndex(oldindex)
+            subIndex = this.carouselList[this.carouselPosition.getIndex()].position.getIndex()
+            parent = this.carouselList[subIndex].items[subIndex].parent
+            
+            main.log("parent: "+parent)
+            
+            this.uint.displayElements(html);
+            
+            break;
+    }
 }
 
 controller.prototype.xmlToArray1 = function xmlToArray1() {
@@ -139,11 +206,18 @@ controller.prototype.cycleXML = function cycleXML(root) {
     folderName = root.getAttribute('title');
     var elems = []
     var it = {};
+    it = {
+        "name": folderName,
+        "classType": "links",
+        "parent": folderName
+    }
+    elems.push(it);
     for (var c=0; c<rootChildren.length; c++) {
         if (rootChildren.item(c).tagName === 'item') {
             it = {
                 "name": rootChildren.item(c).getAttribute('title'),
-                "classType": "files"
+                "classType": "files",
+                "parent": folderName
             }
             elems.push(it);
         }
@@ -151,13 +225,15 @@ controller.prototype.cycleXML = function cycleXML(root) {
             subItems = rootChildren[c];
             it = {
                 "name": rootChildren.item(c).getAttribute('title'),
-                "classType": "links"
+                "classType": "links",
+                "parent": folderName
             }            
             elems.push(it);
             children.push(subItems);
         }
         
     }
+    main.log(it)
     this.generateCarousel(folderName, elems)
     if (children.length > 0) {
         this.traverseXML(children);

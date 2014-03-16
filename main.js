@@ -9,9 +9,10 @@
 
 
 main = {
-
-
+ 
 };
+
+main.ctrl = {}
 
 /** 
  * First function called on application initialization.
@@ -21,8 +22,8 @@ main.onLoad = function () {
     //Set log object.
     main.log("onLoad called!")
     this.setFocus();
-    var ctrl = new controller();
-    ctrl.init();
+    this.ctrl = new controller();
+    this.ctrl.init();
     // Enable key event processing
     
     
@@ -44,7 +45,7 @@ main.key = {
     /*
      * 73 Is H code in keyboard.
      */
-    "HOME": 73
+    "HOME": 72
 }
 /*
  * Forces focus always on anchor.
@@ -67,18 +68,21 @@ main.keyDown = function (event) {
 	switch (keyCode) {
             case this.key.ENTER:
                 main.log("ENTER KEY PRESSED!")
+                this.ctrl.handleInput("ENTER")
                 break;
             case this.key.UP:
-                main.log("UP KEY PRESSED!")
+                this.ctrl.handleInput("UP")
             	break;
             case this.key.DOWN:
-                main.log("DOWN KEY PRESSED!")
+                this.ctrl.handleInput("DOWN")
             	break;
             case this.key.HOME:
-                main.log("HOME KEY PRESSED!")
+                
+                this.ctrl.handleInput("HOME")
             	break;
             case this.key.BACK:
                 main.log("BACK KEY PRESSED!")
+                this.ctrl.handleInput("BACK")
             	break;
 	}
 	

@@ -24,7 +24,7 @@ position.prototype.setIndex = function setIndex(index) {
     }
     if (typeof index === 'undefined')
         index = 0;
-    this.oldIndex = this.index;
+    this.setOldIndex(this.index);
     this.index = index;
 };
 
@@ -41,6 +41,7 @@ position.prototype.getIndex = function getIndex() {
  * @param {Number} Increases index by this amount.
  */
 position.prototype.inc = function inc(offset) {
+    this.setOldIndex();
     if (typeof offset === 'undefined') {
         offset = 1;
         if (this.index < this.len) {
@@ -59,8 +60,10 @@ position.prototype.inc = function inc(offset) {
  * @param {Number} Decreases index by this amount.
  */
 position.prototype.dec = function dec(offset) {
-    if (typeof offset === 'undefined')
+    this.setOldIndex();
+    if (typeof offset === 'undefined') {
         offset = 1;
+    }
     if (this.index > 0) 
         this.index -= offset;    
 };
@@ -81,3 +84,13 @@ position.prototype.setLength = function setLength(total) {
 position.prototype.getLength = function getLength() {
     return this.len;
 };
+
+position.prototype.setOldIndex = function setOldIndex(oldpos) {
+    if (typeof oldpos === 'undefined')
+        oldpos = this.index
+    this.oldIndex = oldpos;
+}
+
+position.prototype.getOldIndex = function getOldIndex() {
+    return this.oldIndex;
+}

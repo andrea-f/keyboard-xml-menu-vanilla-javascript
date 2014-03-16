@@ -185,12 +185,16 @@ a {
 	height: 20px;
 	margin: 10px 0px;
 	padding: 15px;
-	background:url(images/button-FILE.png) no-repeat;
+	background:url(images/button_off.png) no-repeat;
 	text-align: left;
 	text-transform: uppercase;
 	font-size: 14px;
 	font-weight: bold;
 	color: #9f9f9f;
+}
+
+.links.focus {
+    background:url(images/button-FILE.png) no-repeat !important;
 }
 
 .files {
@@ -199,7 +203,7 @@ a {
 	height: 20px;
 	margin: 10px 0px;
 	padding: 15px;
-	background:url(images/buttondark.png) no-repeat;	
+	background:url(images/buttondark.png) no-repeat !important;
 	text-align: left;
 	text-transform: uppercase;
 	font-size: 12px;
@@ -207,6 +211,9 @@ a {
 	color: #9f9f9f;
 }
 
+.files.focus {
+    background:url(images/button.png) no-repeat !important;
+}
 
 /* Footer */
 

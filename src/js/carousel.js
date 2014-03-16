@@ -250,6 +250,8 @@ carousel.prototype.makeArrows = function () {
     return arrowsHtml;
 };
 
+
+
 /*
  * Sets focus class on current index and removes it from last focused element.
  */
@@ -261,7 +263,8 @@ carousel.prototype.setFocus = function setFocus() {
     } else {
         this.focus = "#"+this.name+"-"+this.position.getIndex();
     }
-    main.log(this.focus)
+    main.log("setfocus: "+this.focus + " oldfocus: " + this.oldFocus)
+    
     if (this.usingjQuery) {
         this.focusReference = $(this.focus);
         this.oldFocusReference = $(this.oldFocus);
@@ -269,14 +272,15 @@ carousel.prototype.setFocus = function setFocus() {
         this.oldFocusReference.removeClass('focus');
         this.focusReference.addClass('focus');
     } else {
-        this.focusReference = document.getElementById(this.focus);
-        this.oldFocusReference = document.getElementById(this.oldFocus);
-
+        this.focusReference = document.getElementById(this.focus.replace('#',''));
+        main.log("focusref: " + this.focusReference)
+        this.oldFocusReference = document.getElementById(this.oldFocus.replace('#',''));
+        this.oldFocusReference.className=this.oldFocusReference.className.replace('focus',"");
         this.focusReference.className=this.focusReference.className.replace('focus',""); // first remove the class name if that already exists
-        this.focusReference.className = this.focusReference.className + 'focus';
+        this.focusReference.className = this.focusReference.className + ' focus';
 
-        this.oldFocusReference.className=this.focusReference.className.replace('focus',""); // first remove the class name if that already exists
-        this.oldFocusReference.className = this.focusReference.className + 'focus';
+         // first remove the class name if that already exists
+        //this.oldFocusReference.className = this.focusReference.className + ' focus';
     }
 };
 
@@ -337,7 +341,7 @@ carousel.prototype.scrollFlag = function scrollFlag() {
             //this.maxMargin = $("."+this.ulClassName).css(this.cssAnimation[this.direction])
             
     }
-    sd.log("maxMargin: "+ maxMargin+" margin top: "+ currMargin +" scrolledmax: "+this.scrolledMax+" position length: "+this.position.getLength() + " position index: " + this.position.getIndex() + " visible elements: " + this.visibleElements)
+    //main.log("maxMargin: "+ maxMargin+" margin top: "+ currMargin +" scrolledmax: "+this.scrolledMax+" position length: "+this.position.getLength() + " position index: " + this.position.getIndex() + " visible elements: " + this.visibleElements)
     if (this.position.getIndex() >= this.visibleElements && this.position.getIndex()< this.position.getLength()-1  && this.movementDirection === this.movDir.after) {
         //this.lastVisibleBefore = (this.position.getIndex() - this.visibleElements)+1;
         if (this.scrolledMax && ((this.position.getLength() - this.position.getIndex()) <= this.visibleElements) )
@@ -443,7 +447,8 @@ carousel.prototype.keyBefore = function keyBefore() {
     if (this.blockNav)
         return;
     this.movementDirection = this.movDir.before;
-    this.movement = "+";    
+    this.movement = "+";
+    main.log("index: "+this.position.getIndex())
     if (this.position.getIndex() > 0) {
         this.position.dec(); 
         if (this.useArrows) {
@@ -463,7 +468,7 @@ carousel.prototype.keyBefore = function keyBefore() {
                 this.scrollList();
         }    
     }
-    this.setFocus();    
+    this.setFocus();
 };
 
 /*
@@ -478,7 +483,9 @@ carousel.prototype.keyAfter = function keyAfter() {
     var currMargin = Math.abs(this.currentMargin),
         maxMargin = Math.abs(this.getMaxMargin());
     //sd.log(" mainpos: " +this.mainPosition.getIndex() + " sublistpos: "+this.subListPosition.getIndex() + " pos: "+this.position.getIndex())
+    main.log("pos index: " + this.position.getIndex() + " len: "+this.position.getLength())
     if (this.position.getIndex() < (this.position.getLength()-1)) {
+        
         this.position.inc();
         if (this.useArrows) {
             this.subListPosition.inc();
@@ -488,11 +495,11 @@ carousel.prototype.keyAfter = function keyAfter() {
                 this.scrollList(true);
             }
         }
-        this.setFocus();    
+         
         if (!this.useArrows) {                
             if (currMargin <= maxMargin)
                 this.scrollList();
         }
     }    
-    
+    this.setFocus();   
 };
