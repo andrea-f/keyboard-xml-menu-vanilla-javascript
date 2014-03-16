@@ -263,7 +263,7 @@ carousel.prototype.setFocus = function setFocus() {
     } else {
         this.focus = "#"+this.name+"-"+this.position.getIndex();
     }
-    main.log("setfocus: "+this.focus + " oldfocus: " + this.oldFocus)
+    //main.log("setfocus: "+this.focus + " oldfocus: " + this.oldFocus)
     
     if (this.usingjQuery) {
         this.focusReference = $(this.focus);
@@ -273,14 +273,10 @@ carousel.prototype.setFocus = function setFocus() {
         this.focusReference.addClass('focus');
     } else {
         this.focusReference = document.getElementById(this.focus.replace('#',''));
-        main.log("focusref: " + this.focusReference)
         this.oldFocusReference = document.getElementById(this.oldFocus.replace('#',''));
         this.oldFocusReference.className=this.oldFocusReference.className.replace('focus',"");
         this.focusReference.className=this.focusReference.className.replace('focus',""); // first remove the class name if that already exists
         this.focusReference.className = this.focusReference.className + ' focus';
-
-         // first remove the class name if that already exists
-        //this.oldFocusReference.className = this.focusReference.className + ' focus';
     }
 };
 
@@ -341,7 +337,6 @@ carousel.prototype.scrollFlag = function scrollFlag() {
             //this.maxMargin = $("."+this.ulClassName).css(this.cssAnimation[this.direction])
             
     }
-    //main.log("maxMargin: "+ maxMargin+" margin top: "+ currMargin +" scrolledmax: "+this.scrolledMax+" position length: "+this.position.getLength() + " position index: " + this.position.getIndex() + " visible elements: " + this.visibleElements)
     if (this.position.getIndex() >= this.visibleElements && this.position.getIndex()< this.position.getLength()-1  && this.movementDirection === this.movDir.after) {
         //this.lastVisibleBefore = (this.position.getIndex() - this.visibleElements)+1;
         if (this.scrolledMax && ((this.position.getLength() - this.position.getIndex()) <= this.visibleElements) )

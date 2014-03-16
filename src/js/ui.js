@@ -10,6 +10,6 @@ function ui(params) {
 }
 
 ui.prototype.displayElements = function displayElements(data) {
-    main.log(data)
+    //main.log(data)
     this.content.innerHTML = data;
 }

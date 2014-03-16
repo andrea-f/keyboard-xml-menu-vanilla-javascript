@@ -79,7 +79,7 @@ controller.prototype.generateCarousel = function generateCarousel(folderName,ele
                     "useArrows": false,
                     "totalSize": totSize,
                     "template": function(i) {
-                        var html = "", f;
+                        var html = "", f, p;
                         if (i === 0) {
                             this.focus = this.name+"-"+i
                             f = 'focus'
@@ -87,19 +87,18 @@ controller.prototype.generateCarousel = function generateCarousel(folderName,ele
                         } else {
                             f = ""
                         }
-                        
-                        html += "<p ><span class='"+this.items[i].classType+" "+f+"' id='"+this.name+"-"+i+"' >"+this.items[i].name+"</span></p>";
+                        if (typeof this.items[i].parent !== 'undefined') {
+                            p = this.items[i].parent;
+                        } else {
+                            p = ''
+                        }
+                        html += "<p ><span class='"+this.items[i].classType+" "+f+" parent-"+p+"' id='"+this.name+"-"+i+"' >"+this.items[i].name+"</span></p>";
 
                         return html;
                     }
                 };
     
     this.carouselList[g] = new carousel(params);
-    main.log("folder name: "+folderName+ " pos car: "+this.carouselPosition.getIndex())
-    //main.log("Generating carousel: " + folderName + " with index num: "+i+" \n" + this.carouselList[i].getHtml() + " \n")
-    
-    //this.carouselList[i].setFocus();
-    //main.log(this.carouselList[i].getHtml())
     html = this.carouselList[g].getHtml()
     
     this.carouselPosition.inc(1)
@@ -139,10 +138,10 @@ controller.prototype.traverseData = function traverseData(name) {
 
 controller.prototype.handleInput = function handleInput(inputType) {
     var index = this.carouselPosition.getIndex()
-    main.log("pos car: "+this.carouselPosition.getIndex())
-    main.log(index)
+
     switch (inputType) {
         case this.input.ENTER:
+            this.carouselPosition.setOldIndex(index)
             var elemIndex = this.carouselList[index].items[this.carouselList[index].position.getIndex()];
             //alert()
             //this.carouselPosition.setIndex(go)
@@ -163,16 +162,15 @@ controller.prototype.handleInput = function handleInput(inputType) {
             this.carouselList[index].keyAfter();
             break;
         case this.input.HOME:
+            this.carouselPosition.setIndex(0)
             this.uint.displayElements(this.carouselList[0].getHtml());
             break;
         case this.input.BACK:
-            var oldindex = this.carouselPosition.getOldIndex()
+            //subIndex = this.carouselList[this.carouselPosition.getIndex()].position.getIndex()
+            oldIndex = this.carouselPosition.getOldIndex()
+            parent = this.carouselList[index].items[0].parent
             html = this.traverseData(parent)
-            //this.carouselPosition.setIndex(oldindex)
-            subIndex = this.carouselList[this.carouselPosition.getIndex()].position.getIndex()
-            parent = this.carouselList[subIndex].items[subIndex].parent
-            
-            main.log("parent: "+parent)
+            main.log("parent BACK: "+parent)
             
             this.uint.displayElements(html);
             
@@ -193,7 +191,7 @@ controller.prototype.xmlToArray1 = function xmlToArray1() {
     return;
     //First element under root
     firstElement = docElement['firstChild'].getElementsByTagName("item");
-    //main.log(firstElement)//.getNamedItem('title').value)
+    
 
 }
 
@@ -204,13 +202,29 @@ controller.prototype.cycleXML = function cycleXML(root) {
     var children = []
     //main.log("folder title: "+root.getAttribute('title'));
     folderName = root.getAttribute('title');
+    parentName = ''
+    //main.log(root.parentNode)
+    try{
+        if (root.parentNode.hasAttribute('title')) {
+            //main.log('has attribute...')
+            
+            parentName = root.parentNode.getAttribute('title')
+            
+        } else {
+            main.log('doesnt have attribute...')
+        }
+    } catch (err) {
+        parentName = 'Home'
+    }
+    //main.log("folderName: "+folderName+" parentName: "+parentName)
     var elems = []
     var it = {};
     it = {
         "name": folderName,
         "classType": "links",
-        "parent": folderName
+        "parent": parentName
     }
+    main.log(it)
     elems.push(it);
     for (var c=0; c<rootChildren.length; c++) {
         if (rootChildren.item(c).tagName === 'item') {
@@ -230,10 +244,11 @@ controller.prototype.cycleXML = function cycleXML(root) {
             }            
             elems.push(it);
             children.push(subItems);
+            //main.log(it)
         }
         
     }
-    main.log(it)
+    
     this.generateCarousel(folderName, elems)
     if (children.length > 0) {
         this.traverseXML(children);
@@ -248,82 +263,8 @@ controller.prototype.traverseXML = function traverseXML(children) {
 
 
 }
-    /*for (var r = 0; r< rootTagsFolder.length; r ++ ) {
-        folder = rootTagsFolder[r];
-        main.log("folder: "+folder.getAttribute('title'))
-        folderInFolder = folder.getElementsByTagName("folder");
-        for (var v = 0; v < folderInFolder.length; v++) {
-            itemsInFolder = folderInFolder[v].getElementsByTagName('item');
-            subItemsLen = itemsInFolder.length;
-            main.log(folderInFolder[v].getAttribute('title'));
-            for (var t=0; t<subItemsLen; t++) {
-                if (itemsInFolder[t].getAttribute('title')) {
-                    main.log("item: "+itemsInFolder[t].getAttribute('title'))
-                } else {
-                    main.log("Error malformed XML.")
-                }
-
-            }
-        }
-    }*/
 
 
-
-controller.prototype.xmlToArray = function xmlToArray() {
-    folders = this.data.getElementsByTagName("folder");
-    items = this.data.getElementsByTagName("item");
-    home = folders.firstChild//.getAttribute('title')
-    this.items = []
-    root = folders[0]
-for (i=0;i<root.childNodes.length;i++)
-  {
-  main.log('hhhh')
-  main.log("x: "+root.childNodes[i]);
-  //main.log(": ");
-  //main.log(x[i].childNodes[0].nodeValue);
-  //main.log("<br>");
-  }
-
-   
-
-    if (folders.hasChildNodes) {
-        children = folders.childNodes;
-        for (c in children) {
-            //smain.log("children:" + children[c] + " c: " +c )
-            var subfolder = children
-            //main.log("len: "+subfolder[0].nodeName)
-        }
-
-    }
-    for (var o=0; o<folders.length; o++){
-       //main.log(folders[o])
-       main.log("folders: "+folders[o].getAttribute('title'));
-       nodes = folders[o].childNodes;
-       for (prop in nodes) {
-           //main.log(prop + " : "+ nodes[prop])
-       }
-       for (var r = 0; r < nodes.length; r++) {
-           //main.log("fl: "+nodes[r]['childNodes'])
-           for (prop1 in nodes[r]['childNodes'].item(0)) {
-               main.log(prop1 +" :<: ")//+nodes[r][prop1])
-           }
-           subnodes = nodes[r]['childNodes'];
-           for (var g = 0; g< subnodes; g++) {
-               main.log(subnodes.item(g))
-               for (sss in subnodes.item(g)) {
-                   main.log(sss + " :sss: " + subnodes.item(g)[sss])
-               }
-           }
-       }
-       
-       // First array of folders.
-       this.items[o] = [];
-       for (var s = 0; s < folders[o].childNodes.length; s++) {
-           this.items[o][s] = folders[o].childNodes[s]
-       }
-    }
-    //main.log(this.items)
-}
 
 controller.prototype.generateUI = function generateUI() {
     var data = this.data;
