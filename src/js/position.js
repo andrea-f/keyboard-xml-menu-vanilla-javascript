@@ -41,13 +41,17 @@ position.prototype.getIndex = function getIndex() {
  * @param {Number} Increases index by this amount.
  */
 position.prototype.inc = function inc(offset) {
-    if (typeof offset === 'undefined')
+    if (typeof offset === 'undefined') {
         offset = 1;
-    if (this.index < this.len) {
-        this.index += offset;    
+        if (this.index < this.len) {
+            this.index += offset;
+        } else {
+            this.index = this.len - 1;
+        }
     } else {
-        this.index = this.len - 1;
+        this.index += offset;
     }
+    
 };
 
 /*

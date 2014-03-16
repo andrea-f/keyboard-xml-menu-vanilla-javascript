@@ -41,8 +41,15 @@ function carousel(params){
         "horizontal": "marginLeft",
         "vertical": "marginTop"    
     };
-    
-    this.animationDiv = $('div.'+this.ulClassName);
+
+    this.usingjQuery = false;
+    //main.log(typeof $)
+    if (typeof $ !== 'undefined')
+        this.usingjQuery = true;
+
+    //main.log("using jquery: "+this.usingjQuery)
+    if (this.usingjQuery)
+        this.animationDiv = $('div.'+this.ulClassName);
     
     this.scrolledMax = false;
     
@@ -97,7 +104,7 @@ carousel.prototype.getCarouselSize = function getCarouselSize() {
 /*
  * First function to be called upon object instantiation.
  */
-carousel.prototype.generateSubList = function generateList() {
+carousel.prototype.generateSubList = function generateSubList() {
     var total = this.items.length;
     this.mainPosition.setLength(total);
     this.position.setLength(this.total);
@@ -159,7 +166,8 @@ carousel.prototype.generateList = function generateList() {
     } else {        
         this.items = this.subItems;
         //this.focus = "#"+this.name+"-"+this.position.getIndex();
-        this.setFocus();
+        if (this.usingjQuery)
+            this.setFocus();
         return this.generateSubList();
     }    
 };
@@ -253,11 +261,23 @@ carousel.prototype.setFocus = function setFocus() {
     } else {
         this.focus = "#"+this.name+"-"+this.position.getIndex();
     }
-    this.focusReference = $(this.focus);
-    this.oldFocusReference = $(this.oldFocus);
-    //sd.log("[carousel.setFocus] focus id: "+this.focus + " oldfocus: "+this.oldFocus);
-    this.oldFocusReference.removeClass('focus');
-    this.focusReference.addClass('focus');    
+    main.log(this.focus)
+    if (this.usingjQuery) {
+        this.focusReference = $(this.focus);
+        this.oldFocusReference = $(this.oldFocus);
+        //sd.log("[carousel.setFocus] focus id: "+this.focus + " oldfocus: "+this.oldFocus);
+        this.oldFocusReference.removeClass('focus');
+        this.focusReference.addClass('focus');
+    } else {
+        this.focusReference = document.getElementById(this.focus);
+        this.oldFocusReference = document.getElementById(this.oldFocus);
+
+        this.focusReference.className=this.focusReference.className.replace('focus',""); // first remove the class name if that already exists
+        this.focusReference.className = this.focusReference.className + 'focus';
+
+        this.oldFocusReference.className=this.focusReference.className.replace('focus',""); // first remove the class name if that already exists
+        this.oldFocusReference.className = this.focusReference.className + 'focus';
+    }
 };
 
 /*
@@ -273,7 +293,7 @@ carousel.prototype.scrollList = function scrollList(animate) {
             case this.dirs.horizontal:
                 this.animateHorizontalScroll();
                 break;
-            case this.dirs.vertical: 
+            case this.dirs.vertical:
                 this.animateVerticalScroll();
                 break;
         }

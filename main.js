@@ -96,5 +96,11 @@ main.loadXMLdata = function () {
 main.log = function (text) {
     if (typeof text === 'string') {
         console.log("LOG: " + text)        
-    }    
+    }
+    if (typeof text === 'object') {
+        for (prop in text) {
+            console.log("LOG: " + prop + " : " + text[prop])
+        }
+    }
+
 }
