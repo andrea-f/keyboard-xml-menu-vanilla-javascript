@@ -1,3 +1,10 @@
+/*
+ * @author Andrea Fassina.
+ * Code provided by  Code is under bsd license 2.
+ * controller.js holds data fetching capability.
+ * @date 15-03-2014
+ */
+
 function position(params){
     //Holds carousel current index.
     this.index = null;
@@ -85,12 +92,19 @@ position.prototype.getLength = function getLength() {
     return this.len;
 };
 
+/*
+ * Sets old index.
+ * @type {Number} oldpos number to set old index to.
+ */
 position.prototype.setOldIndex = function setOldIndex(oldpos) {
     if (typeof oldpos === 'undefined')
         oldpos = this.index
     this.oldIndex = oldpos;
 }
 
+/*
+ * Returns old index.
+ */
 position.prototype.getOldIndex = function getOldIndex() {
     return this.oldIndex;
 }

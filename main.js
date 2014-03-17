@@ -12,6 +12,7 @@ main = {
  
 };
 
+// Will hold new controller.
 main.ctrl = {}
 
 /** 
@@ -19,21 +20,24 @@ main.ctrl = {}
  * @namespace main
  * */
 main.onLoad = function () {
-    //Set log object.
-    main.log("onLoad called!")
+    //HELLO WORLD!
+    main.log("onLoad called!");
     this.setFocus();
     this.ctrl = new controller();
-    this.ctrl.init();
-    // Enable key event processing
-    
-    
-    
+    this.ctrl.init();    
 };
 
+/*
+ * Enable key event processing.
+ */ 
 main.setFocus = function() {
     document.getElementById("anchor").focus();
 }
 
+
+/*
+ * Maps key name with key number.
+ */
 main.key = {
     "ENTER": 13,
     "UP": 38,
@@ -46,46 +50,41 @@ main.key = {
      * 73 Is H code in keyboard.
      */
     "HOME": 72
-}
+};
+
 /*
  * Forces focus always on anchor.
  * @param {Object} event that happened.
  */
 main.mouseClick = function (event) {
     this.setFocus();
-}
-
+};
 
 /** 
  * Handle keydown events
  * @param {object} event is passed from index.html 
  * */
 main.keyDown = function (event) {
-        main.log("EVENT passed : " + event.keyCode);
-	var keyCode = event.keyCode;
+        var keyCode = event.keyCode;
        
 	//Handle key press events
 	switch (keyCode) {
             case this.key.ENTER:
-                main.log("ENTER KEY PRESSED!")
-                this.ctrl.handleInput("ENTER")
+                this.ctrl.handleInput(this.ctrl.input.ENTER);
                 break;
             case this.key.UP:
-                this.ctrl.handleInput("UP")
+                this.ctrl.handleInput(this.ctrl.input.UP);
             	break;
             case this.key.DOWN:
-                this.ctrl.handleInput("DOWN")
+                this.ctrl.handleInput(this.ctrl.input.DOWN);
             	break;
-            case this.key.HOME:
-                
-                this.ctrl.handleInput("HOME")
+            case this.key.HOME:                
+                this.ctrl.handleInput(this.ctrl.input.HOME);
             	break;
             case this.key.BACK:
-                main.log("BACK KEY PRESSED!")
-                this.ctrl.handleInput("BACK")
+                this.ctrl.handleInput(this.ctrl.input.BACK);
             	break;
-	}
-	
+	}	
 };
 
 /*
@@ -97,6 +96,10 @@ main.loadXMLdata = function () {
     sd.serverData.loadChannel();
 };
 
+/*
+ * Logging functionality.
+ * @type {String} or {Object} to print to console.
+ */
 main.log = function (text) {
     if (typeof text === 'string') {
         console.log("LOG: " + text)        
@@ -106,5 +109,4 @@ main.log = function (text) {
             console.log("LOG: " + prop + " : " + text[prop])
         }
     }
-
 }

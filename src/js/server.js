@@ -23,14 +23,13 @@ function server(params) {
 /*
  * Loads XML file for usage.
  * @param {String} location place of XML file, either local or remote.
+ * @return {Object} xmlDoc file from server with xml information.
  */
-server.prototype.loadXML = function loadXML(location) {
-    
+server.prototype.loadXML = function loadXML(location) {    
     if (window.XMLHttpRequest) {
         xhttp=new XMLHttpRequest();
     }
-    else // for IE 5/6
-    {
+    else {
         xhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
     xhttp.open("GET", location, false);
@@ -41,16 +40,12 @@ server.prototype.loadXML = function loadXML(location) {
     return xmlDoc
 }
 
+/*
+ * Sets server xml doc reference.
+ * @param {Object} xmlDoc file from server with xml information.
+ */
 server.prototype.setXMLDoc = function setXMLDoc(xmlDoc) {
     if (typeof xmlDoc === 'undefined') {
         this.xmlDoc = xmlDoc;
     }
-}
-
-server.prototype.loadLocalXML = function loadLocalXML(location) {
-    xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-    xmlDoc.async = false;
-    while(xmlDOC.readyState !=4) {};
-    xmlDoc=loadXMLDoc(location);
-    return xmlDoc
 }
